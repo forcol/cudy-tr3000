@@ -46,7 +46,6 @@ on:
 
 env:
   DEVICE_INPUT: ${{ github.event.inputs.device || github.event.client_payload.device }}
-  CCACHE_MAXSIZE: 2G
   REPO_URL: ${{ github.event.inputs.repo }}
   REPO_BRANCH: openwrt-24.10-6.6
   REPO_COMMIT: ${{ github.event.inputs.commit }}
@@ -91,7 +90,7 @@ jobs:
           fi
 
       - name: 🧬 Update & Install feeds
-        run: cd openwrt && ./scripts/feeds update -a && ./scripts/feeds install -a
+        run: cd openwrt && ./scripts/feeds update -a && ./scripts/feeds install -a 
 
       - name: ⌨️ SSH connection to Menuconfig
         uses: mxschmitt/action-tmate@v3
@@ -152,6 +151,7 @@ jobs:
           cd openwrt
           ./scripts/feeds update -a
           ./scripts/feeds install -a
+          sed -i 's/ci-llvm=true/ci-llvm=false/g' feeds/packages/lang/rust/Makefile
 
       - name: 🔨 Multi-Device Compilation Loop
         id: compile
@@ -227,7 +227,6 @@ jobs:
           **🌿 Branch:** $REPO_BRANCH
           **📱 Device:** ${DEVICE_INPUT}
           **📅 Build Date:** $(date +"%Y-%m-%d %H:%M:%S")
-          **🔨 Compiler:** GCC with ccache
 
           ## 📥 Download
 
