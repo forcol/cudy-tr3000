@@ -90,7 +90,7 @@ jobs:
           fi
 
       - name: 🧬 Update & Install feeds
-        run: cd openwrt && ./scripts/feeds update -a && ./scripts/feeds install -a 
+        run: cd openwrt && ./scripts/feeds update -a && ./scripts/feeds install -a && sed -i 's/ci-llvm=true/ci-llvm=false/g' feeds/packages/lang/rust/Makefile
 
       - name: ⌨️ SSH connection to Menuconfig
         uses: mxschmitt/action-tmate@v3
