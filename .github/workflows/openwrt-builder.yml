@@ -51,9 +51,6 @@ env:
   REPO_URL: ${{ github.event.inputs.repo }}
   REPO_BRANCH: openwrt-24.10-6.6
   REPO_COMMIT: ${{ github.event.inputs.commit }}
-  FEEDS_CONF: feeds.conf.default
-  DIY_P1_SH: diy-part1.sh
-  DIY_P2_SH: diy-part2.sh
   UPLOAD_RELEASE: ${{ github.event.inputs.release }}
   PRERELEASE: ${{ github.event.inputs.prerelease }}
   TZ: Asia/Shanghai
@@ -94,22 +91,8 @@ jobs:
             cp -f "$GITHUB_WORKSPACE/${CONFIG_FILE}" /workdir/openwrt/.config
           fi
 
-      - name: ⚙️ Load custom feeds
-        run: |
-          [ -e $FEEDS_CONF ] && mv $FEEDS_CONF openwrt/feeds.conf.default
-          chmod +x $DIY_P1_SH
-          cd openwrt
-          $GITHUB_WORKSPACE/$DIY_P1_SH
-
       - name: 🧬 Update & Install feeds
         run: cd openwrt && ./scripts/feeds update -a && ./scripts/feeds install -a
-
-      - name: 🧩 Load custom configuration
-        run: |
-          [ -e $CONFIG_FILE ] && cp -f $CONFIG_FILE openwrt/.config
-          chmod +x $DIY_P2_SH
-          cd openwrt
-          $GITHUB_WORKSPACE/$DIY_P2_SH
 
       - name: ⌨️ SSH connection to Menuconfig
         uses: mxschmitt/action-tmate@v3
@@ -185,13 +168,8 @@ jobs:
       - name: 🧬 Update & Install feeds
         run: |
           cd openwrt
-          [ -e $GITHUB_WORKSPACE/$FEEDS_CONF ] && mv $GITHUB_WORKSPACE/$FEEDS_CONF feeds.conf.default
-          chmod +x $GITHUB_WORKSPACE/$DIY_P1_SH
-          $GITHUB_WORKSPACE/$DIY_P1_SH
           ./scripts/feeds update -a
           ./scripts/feeds install -a
-          chmod +x $GITHUB_WORKSPACE/$DIY_P2_SH
-          $GITHUB_WORKSPACE/$DIY_P2_SH
 
       - name: 🔨 Multi-Device Compilation Loop
         id: compile
